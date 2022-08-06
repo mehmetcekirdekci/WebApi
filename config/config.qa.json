@@ -1,0 +1,10 @@
+{
+    "PostgreSqlDbSettings": {
+        "host": "localhost",
+        "user": "postgres",
+        "password": "5492",
+        "dbname": "GolanApiExample",
+        "port": "5432",
+        "sslmode": "disable"
+    }
+}

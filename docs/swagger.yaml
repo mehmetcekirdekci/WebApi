@@ -1,0 +1,56 @@
+definitions:
+  controller.BaseCustomerResponse:
+    properties:
+      responseMessage:
+        type: string
+      success:
+        type: boolean
+    type: object
+  controller.RegisterCustomerRequest:
+    properties:
+      adress:
+        type: string
+      birthDate:
+        type: string
+      email:
+        type: string
+      firstName:
+        type: string
+      gender:
+        type: integer
+      lastName:
+        type: string
+      password:
+        type: string
+    required:
+    - birthDate
+    - email
+    - firstName
+    - lastName
+    - password
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/customer:
+    post:
+      parameters:
+      - description: RegisterCustomerRequest
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.RegisterCustomerRequest'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.BaseCustomerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.BaseCustomerResponse'
+      summary: Register the customer
+      tags:
+      - customer
+swagger: "2.0"
