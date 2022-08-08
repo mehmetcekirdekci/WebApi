@@ -5,11 +5,16 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/application"
 	customercontroller "github.com/mehmetcekirdekci/WebApi/app/customer/application/controller"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/domain/repositories"
+	echoextention "github.com/mehmetcekirdekci/WebApi/pkg/echoExtention"
 	"github.com/spf13/cobra"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -56,6 +61,16 @@ func init() {
 		customerService = application.NewService(customerRepo, accountInformationRepo)
 
 		customercontroller.MakeHandler(apiCmd.instance, customercontroller.NewController(customerService))
+
+		apiCmd.instance.GET("/swagger/*", echoSwagger.WrapHandler)
+
+		go func ()  {
+			err := apiCmd.instance.Start(fmt.Sprint("%s", apiCmd.Port))
+			if err != nil {
+				println(err)
+			}
+		}()
+		echoextention.Shutdown(apiCmd.instance, 2*time.Second)
 
 		return nil
 	}
