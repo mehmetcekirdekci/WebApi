@@ -5,10 +5,10 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/application"
 	customercontroller "github.com/mehmetcekirdekci/WebApi/app/customer/application/controller"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/domain/repositories"
@@ -38,6 +38,9 @@ var apiCmd = &api{
 func init() {
 	RootCommand.AddCommand(apiCmd.command)
 	apiCmd.instance = echo.New()
+	apiCmd.instance.Use(middleware.Logger())
+	apiCmd.instance.Use(middleware.Recover())
+	apiCmd.instance.GET("/swagger/*", echoSwagger.WrapHandler)
 
 	apiCmd.command.RunE = func(cmd *cobra.Command, args []string) error {
 		var err error
@@ -62,14 +65,7 @@ func init() {
 
 		customercontroller.MakeHandler(apiCmd.instance, customercontroller.NewController(customerService))
 
-		apiCmd.instance.GET("/swagger/*", echoSwagger.WrapHandler)
-
-		go func ()  {
-			err := apiCmd.instance.Start(fmt.Sprint("%s", apiCmd.Port))
-			if err != nil {
-				println(err)
-			}
-		}()
+		apiCmd.instance.Logger.Fatal(apiCmd.instance.Start(":5000"))
 		echoextention.Shutdown(apiCmd.instance, 2*time.Second)
 
 		return nil

@@ -22,12 +22,6 @@ definitions:
         type: string
       password:
         type: string
-    required:
-    - birthDate
-    - email
-    - firstName
-    - lastName
-    - password
     type: object
 info:
   contact: {}

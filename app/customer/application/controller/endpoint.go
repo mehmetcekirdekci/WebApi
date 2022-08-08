@@ -34,7 +34,7 @@ func (receiver *resource) registerCustomer(c echo.Context) error  {
 		result.ResponseMessage = err.Error()
 		return echo.NewHTTPError(http.StatusBadRequest, result)
 	}
-	err = c.Validate(request)
+	err = c.Validate(request)	
 	if err != nil {
 		result.ResponseMessage = err.Error()
 		return echo.NewHTTPError(http.StatusBadRequest, result)

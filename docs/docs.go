@@ -64,13 +64,6 @@ const docTemplate = `{
         },
         "controller.RegisterCustomerRequest": {
             "type": "object",
-            "required": [
-                "birthDate",
-                "email",
-                "firstName",
-                "lastName",
-                "password"
-            ],
             "properties": {
                 "adress": {
                     "type": "string"
