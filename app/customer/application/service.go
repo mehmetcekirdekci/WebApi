@@ -30,20 +30,15 @@ func NewService(customerRepository repositories.CustomerRepository, accountInfor
 }
 
 func (receiver *service) Register(dto *types.CustomerDto) error {
-	isEnabledCustomerActivate := false
-	filter := types.Customer{
-		Email: dto.Email,
-	}
-	customerFromDb, err := receiver.customerRepository.GetByFilter(&filter)
+	isCustomerAlreadyExist, isEnabledCustomerActivate, customerFromDb, err := CustomerEnableCheck(dto.Email, receiver)
 	if err != nil {
-		return errors.New("Something went wrong.")
-	} else if customerFromDb != nil && customerFromDb.IsActive == true {
-		return errors.New("This customer already registered.")
-	} else if customerFromDb != nil && customerFromDb.IsActive == false {
-		isEnabledCustomerActivate = true
+		return err
 	}
 	customer := dto.ToCustomer()
-	if isEnabledCustomerActivate {
+	if isCustomerAlreadyExist && !isEnabledCustomerActivate {
+		return errors.New(types.IsCustomerAlreadyExistErrorMessage)
+	}
+	if isCustomerAlreadyExist && isEnabledCustomerActivate {
 		err = receiver.customerRepository.Activate(customer, customerFromDb.CustomerId)
 		if err != nil {
 			return err
@@ -62,4 +57,19 @@ func (receiver *service) Register(dto *types.CustomerDto) error {
 	}
 	// TODO: Rollback mechanism will add.
 	return nil
+}
+
+func CustomerEnableCheck(email string, receiver *service) (bool, bool, *types.Customer, error) {
+	filter := types.Customer{
+		Email: email,
+	}
+	customerFromDb, err := receiver.customerRepository.GetByFilter(&filter)
+	if err != nil {
+		return false, false, nil, errors.New(types.CustomerRegisterErrorMessage)
+	} else if customerFromDb != nil && customerFromDb.IsActive == true {
+		return true, false, customerFromDb, nil
+	} else if customerFromDb != nil && customerFromDb.IsActive == false {
+		return true, true, customerFromDb, nil
+	}
+	return false, false, customerFromDb, nil
 }

@@ -16,3 +16,8 @@ const (
 	CustomersTable = "Customers"
 	AccountInformationsTable = "AccountInformations"
 )
+
+const (
+	CustomerRegisterErrorMessage = "Something went wrong."
+	IsCustomerAlreadyExistErrorMessage = "Customer registered succesfuly."
+)
