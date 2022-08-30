@@ -11,6 +11,7 @@ import (
 
 type Service interface {
 	Register(dto *types.CustomerDto) error
+	Login(email string, password string) error
 }
 
 type service struct {
@@ -56,6 +57,11 @@ func (receiver *service) Register(dto *types.CustomerDto) error {
 		return err
 	}
 	// TODO: Rollback mechanism will add.
+	return nil
+}
+
+func (receiver *service) Login(email string, password string) error {
+	//passwordHash := helper.CreatePasswordHash(password)
 	return nil
 }
 

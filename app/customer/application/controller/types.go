@@ -27,6 +27,11 @@ type (
 		Gender    types.GenderTypeEnum `json:"gender" validate:"gte=0"`
 		Adress    *string              `json:"adress"`
 	}
+
+	LoginCustomerRequest struct {
+		Email     string               `json:"email" validate:"required"`
+		Password  string               `json:"password" validate:"required"`
+	}
 )
 
 func (cv *CustomValidator) Validate(i interface{}) error {

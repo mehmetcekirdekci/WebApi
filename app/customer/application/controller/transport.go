@@ -15,4 +15,5 @@ func MakeHandler(instance *echo.Echo, s *resource) {
 	baseUrl := "api/v1/customer"
 
 	g.POST(fmt.Sprintf("%s", baseUrl), s.registerCustomer)
+	g.POST(fmt.Sprintf("%s/login", baseUrl), s.login)
 }
