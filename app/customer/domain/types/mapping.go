@@ -14,6 +14,7 @@ func (dto *CustomerDto) ToCustomer() *Customer {
 		BirthDate:  dto.BirthDate,
 		Gender:     dto.Gender,
 		Adress:     dto.Adress,
+		IsActive: dto.IsActive,
 	}
 	return &customer
 }

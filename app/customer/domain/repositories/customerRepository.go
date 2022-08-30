@@ -10,7 +10,7 @@ import (
 
 type CustomerRepository interface {
 	Register(customer *types.Customer) error
-	GetByMail(email string) (*types.Customer, error)
+	GetByFilter(filter *types.Customer) (*types.Customer, error)
 	Activate(customer *types.Customer, customerId uuid.UUID) error
 }
 
@@ -50,11 +50,13 @@ func (receiver *customerRepository) Deactivate(customer *types.Customer) error  
 	return nil
 }
 
-func (receiver *customerRepository) GetByMail(email string) (*types.Customer, error) {
-	var customer *types.Customer
-	err := receiver.db.Table(types.CustomersTable).Raw("SELECT * FROM Customers WHERE Email = ?", email).Scan(&customer).Error
-	if err != nil {
+func (receiver *customerRepository) GetByFilter(filter *types.Customer) (*types.Customer, error) {
+	var customer types.Customer
+	err := receiver.db.Table(types.CustomersTable).Where(filter).First(&customer).Error
+	if customer.Id == 0 {
+		return nil, nil
+	} else if err != nil {
 		return nil, err
 	}
-	return customer, nil
+	return &customer, nil
 }

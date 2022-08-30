@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/application"
 )
@@ -25,6 +26,7 @@ func NewController(service application.Service) *resource {
 // @Failure 400 {object} BaseCustomerResponse
 // @Router /api/v1/customer	[post]
 func (receiver *resource) registerCustomer(c echo.Context) error  {
+	c.Echo().Validator = &CustomValidator{validator: validator.New()}
 	request := new(RegisterCustomerRequest)
 	result := BaseCustomerResponse {
 		Success: false,
@@ -43,7 +45,7 @@ func (receiver *resource) registerCustomer(c echo.Context) error  {
 	dto := request.ToDto()
 	err = receiver.service.Register(dto)
 	if err != nil {
-		result.ResponseMessage = application.RegisterErrorMessage
+		result.ResponseMessage = err.Error()
 		return echo.NewHTTPError(http.StatusBadRequest, result)
 	}
 	result.Success = true

@@ -1,18 +1,16 @@
 package controller
 
 import (
-	"errors"
 	"time"
-
-	ut "github.com/go-playground/universal-translator"
+	"net/http"
 	"github.com/go-playground/validator/v10"
+	"github.com/labstack/echo/v4"
 	"github.com/mehmetcekirdekci/WebApi/app/customer/domain/types"
 )
 
 type (
 	CustomValidator struct {
 		validator *validator.Validate
-		translator *ut.Translator
 	}
 
 	BaseCustomerResponse struct {
@@ -21,25 +19,20 @@ type (
 	}
 
 	RegisterCustomerRequest struct {
-		Email     string               `json:"email"`
-		Password  string               `json:"password"`
-		FirstName string               `json:"firstName"`
-		LastName  string               `json:"lastName"`
-		BirthDate time.Time            `json:"birthDate"`
-		Gender    types.GenderTypeEnum `json:"gender"`
+		Email     string               `json:"email" validate:"required"`
+		Password  string               `json:"password" validate:"required"`
+		FirstName string               `json:"firstName" validate:"required"`
+		LastName  string               `json:"lastName" validate:"required"`
+		BirthDate time.Time            `json:"birthDate" validate:"required"`
+		Gender    types.GenderTypeEnum `json:"gender" validate:"gte=0"`
 		Adress    *string              `json:"adress"`
 	}
 )
 
 func (cv *CustomValidator) Validate(i interface{}) error {
-	err := cv.validator.Struct(i)
-	if err != nil {
-		var translatedErrors string
-		validationErrors := err.(validator.ValidationErrors).Translate((*cv.translator))
-		for _, val := range validationErrors {
-			translatedErrors += val + "."
-		}
-		return errors.New(translatedErrors)
+	if err := cv.validator.Struct(i); err != nil {
+	  // Optionally, you could return the error to give each route more control over the status code
+	  return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return nil
-}
+  }

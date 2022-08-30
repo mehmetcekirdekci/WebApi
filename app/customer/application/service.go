@@ -31,7 +31,10 @@ func NewService(customerRepository repositories.CustomerRepository, accountInfor
 
 func (receiver *service) Register(dto *types.CustomerDto) error {
 	isEnabledCustomerActivate := false
-	customerFromDb, err := receiver.customerRepository.GetByMail(dto.Email)
+	filter := types.Customer{
+		Email: dto.Email,
+	}
+	customerFromDb, err := receiver.customerRepository.GetByFilter(&filter)
 	if err != nil {
 		return errors.New("Something went wrong.")
 	} else if customerFromDb != nil && customerFromDb.IsActive == true {

@@ -11,6 +11,7 @@ func (request *RegisterCustomerRequest) ToDto() *types.CustomerDto {
 		Gender:    request.Gender,
 		Adress:    request.Adress,
 		Password:  request.Password,
+		IsActive: true,
 	}
 	return &dto
 }

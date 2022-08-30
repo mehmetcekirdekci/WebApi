@@ -16,5 +16,6 @@ type (
 		Gender GenderTypeEnum
 		Adress *string
 		Password string
+		IsActive bool
 	}
 )
