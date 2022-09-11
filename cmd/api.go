@@ -5,6 +5,7 @@ Copyright © 2022 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"context"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -15,6 +16,8 @@ import (
 	echoextention "github.com/mehmetcekirdekci/WebApi/pkg/echoExtention"
 	"github.com/spf13/cobra"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -57,9 +60,15 @@ func init() {
 			return err
 		}
 
+		mongoDb, err := MongoNewDatabase("mongodb://localhost:27017", "GolangApiExample")
+		if err != nil {
+			println(err)
+			return err
+		}
+
 		customerRepo = repositories.NewCustomerRepository(db)
 
-		accountInformationRepo = repositories.NewAccountInformationRepository(db)
+		accountInformationRepo = repositories.NewAccountInformationRepository(mongoDb)
 
 		customerService = application.NewService(customerRepo, accountInformationRepo)
 
@@ -70,4 +79,22 @@ func init() {
 
 		return nil
 	}
+}
+
+
+func MongoNewDatabase(uri, databaseName string) (db *mongo.Database, err error) {
+	clientOptions := options.Client().ApplyURI(uri)
+	client, err := mongo.NewClient(clientOptions)
+	if err != nil {
+		println(err)
+		return nil, err
+	}
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*10)
+	err = client.Connect(ctx)
+	if err != nil {
+		println(err)
+		return nil, err
+	}
+	db = client.Database(databaseName)
+	return db, nil
 }

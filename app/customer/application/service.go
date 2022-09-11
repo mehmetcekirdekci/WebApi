@@ -1,6 +1,7 @@
 package application
 
 import (
+	"context"
 	"errors"
 
 	"github.com/google/uuid"
@@ -52,8 +53,8 @@ func (receiver *service) Register(dto *types.CustomerDto) error {
 	}
 	passwordHash := helper.CreatePasswordHash(dto.Password)
 	accountInformation := dto.ToAccountInformation(customer.CustomerId, passwordHash)
-	err = receiver.accountInformationRepository.InsertAccountInformation(accountInformation)
-	if err != nil {
+	result, err := receiver.accountInformationRepository.InsertAccountInformation(context.TODO(), accountInformation)
+	if err != nil || result.InsertedID == nil {
 		return err
 	}
 	// TODO: Rollback mechanism will add.

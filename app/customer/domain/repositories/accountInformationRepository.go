@@ -1,32 +1,33 @@
 package repositories
 
 import (
+	"context"
 	"errors"
 
 	"github.com/mehmetcekirdekci/WebApi/app/customer/domain/types"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AccountInformationRepository interface {
-	InsertAccountInformation(accountInformation *types.AccountInformation) error
+	InsertAccountInformation(ctx context.Context, document interface{}) (*mongo.InsertOneResult, error)
 }
 
 type (
 	accountInformationRepository struct {
-		db *gorm.DB
+		accountInformationsCollection *mongo.Collection
 	}
 )
 
-func NewAccountInformationRepository(database *gorm.DB) AccountInformationRepository {
+func NewAccountInformationRepository(database *mongo.Database) AccountInformationRepository {
 	return &accountInformationRepository{
-		db: database,
+		accountInformationsCollection: database.Collection(types.AccountInformationsTable),
 	}
 }
 
-func (receiver *accountInformationRepository) InsertAccountInformation(accountInformation *types.AccountInformation) error {
-	err := receiver.db.Table(types.AccountInformationsTable).Create(&accountInformation).Error
+func (receiver *accountInformationRepository) InsertAccountInformation(ctx context.Context, document interface{}) (*mongo.InsertOneResult, error) {
+	result, err := receiver.accountInformationsCollection.InsertOne(ctx, document)
 	if err != nil {
-		return errors.New("Account information can not be inserted.")
+		return result, errors.New("Account information can not be inserted.")
 	}
-	return nil
+	return result, nil
 }

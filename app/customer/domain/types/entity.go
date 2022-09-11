@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type (
@@ -20,9 +21,10 @@ type (
 	}
 
 	AccountInformation struct {
-		Id           int       `gorm:"column:Id;primary_key"`
-		CustomerId   uuid.UUID `gorm:"column:CustomerId"`
-		PasswordHash string    `gorm:"column:PasswordHash"`
-		RegisterDate time.Time `gorm:"column:RegisterDate"`
+		Id           primitive.ObjectID     `json:"id bson:"_id,omitempty"`
+		CustomerId   uuid.UUID 				`bson:"customerId"`
+		PasswordHash string 				`bson:"passwordHash"`   
+		RegisterDate time.Time 				`bson:"registerDate"`
+		Jwt 		 string 				`bson:"jwt"`
 	}
 )
